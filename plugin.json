@@ -1,0 +1,6 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "gateway",
+  "version": "0.1.0",
+  "description": "Local-first engineering workflow skills for planning, implementation, review, and fix verification."
+}
