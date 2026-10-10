@@ -30,6 +30,8 @@ Use the gateway skill to plan and implement this change. Start with discovery an
 - Plans are approved before non-trivial implementation.
 - Each task has observable verification evidence.
 - PR review, fix, and independent fix review repeat until blocker and major findings are resolved.
+- Gateway never deletes persistent records or destroys datastores; it supplies a reviewed, user-run procedure when deletion is genuinely required.
+- Risky code and data workflows are sandboxed with isolated fixtures and review flags before handoff.
 
 ## Workflow
 
@@ -41,7 +43,11 @@ flowchart TD
     approval -- revise --> discovery
     approval -- approved --> task[Select approved task]
 
-    task --> implement[Implement and test\ngateway:implementer + gateway:test]
+    task --> flags[Set review flags\ngateway:security]
+    flags --> sandbox{Sandbox required?}
+    sandbox -- yes --> isolated[Isolated sandbox validation\ngateway:sandbox]
+    sandbox -- no --> implement[Implement and test\ngateway:implementer + gateway:test]
+    isolated --> implement
     implement --> review[Independent PR review\ngateway:pr-reviewer]
     review --> findings{Blocker or major\nfinding?}
     findings -- no --> next{More approved\ntasks?}
@@ -59,6 +65,7 @@ flowchart TD
     implement -. discrepancy .-> discrepancy
     review -. discrepancy .-> discrepancy
     discrepancy --> plan
+    flags -. USER_RUN_REQUIRED .-> userRun[Gateway does not delete records\nUser inspects and runs procedure]
 ```
 
 ## Evolving Gateway
